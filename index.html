@@ -3,6 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#f2f4f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f141c" media="(prefers-color-scheme: dark)">
@@ -456,6 +457,13 @@ $("cur").textContent = L().sentences[cues()[cueAt(saved.pos || 0)][1]].fr;
   if (!("serviceWorker" in navigator)) { el.textContent = "This browser can't save lessons for offline."; return; }
   try { await navigator.serviceWorker.register("sw.js"); await navigator.serviceWorker.ready; } catch { el.textContent = "Couldn't set up offline mode."; return; }
   try { await navigator.storage?.persist?.(); } catch {}
+  // Save the web fonts too (the first visit loads them before the service worker is in control).
+  (async () => { try {
+    if (!navigator.serviceWorker.controller) await new Promise(r => { navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }); setTimeout(r, 3000); });
+    for (const l of document.querySelectorAll('link[href*="fonts.googleapis.com"]')) {
+      const css = await (await fetch(l.href)).text();
+      await Promise.all([...css.matchAll(/url\((https:[^)]+)\)/g)].map(m => fetch(m[1]).catch(() => {})));
+    } } catch {} })();
   const files = ["audio/au-cafe-immerse.mp4", "audio/au-cafe-learn.mp4", "audio/au-cafe-recall.mp4", "audio/avis-immerse.mp4", "audio/avis-learn.mp4", "audio/avis-recall.mp4", "audio/d-cafe-immerse.mp4", "audio/d-cafe-learn.mp4", "audio/d-cafe-recall.mp4", "audio/d-depanneur-immerse.mp4", "audio/d-depanneur-learn.mp4", "audio/d-depanneur-recall.mp4", "audio/d-plans-immerse.mp4", "audio/d-plans-learn.mp4", "audio/d-plans-recall.mp4", "audio/d-soiree-immerse.mp4", "audio/d-soiree-learn.mp4", "audio/d-soiree-recall.mp4", "audio/en-ville-immerse.mp4", "audio/en-ville-learn.mp4", "audio/en-ville-recall.mp4", "audio/les-bases-immerse.mp4", "audio/les-bases-learn.mp4", "audio/les-bases-recall.mp4", "audio/les-gens-immerse.mp4", "audio/les-gens-learn.mp4", "audio/les-gens-recall.mp4", "audio/mix-immerse.mp4", "audio/mix-learn.mp4", "audio/mix-recall.mp4", "audio/moi-immerse.mp4", "audio/moi-learn.mp4", "audio/moi-recall.mp4", "audio/projets-immerse.mp4", "audio/projets-learn.mp4", "audio/projets-recall.mp4", "audio/quebec-immerse.mp4", "audio/quebec-learn.mp4", "audio/quebec-recall.mp4", "audio/questions-immerse.mp4", "audio/questions-learn.mp4", "audio/questions-recall.mp4", "audio/quotidien-immerse.mp4", "audio/quotidien-learn.mp4", "audio/quotidien-recall.mp4", "audio/travail-immerse.mp4", "audio/travail-learn.mp4", "audio/travail-recall.mp4", "audio/universite-immerse.mp4", "audio/universite-learn.mp4", "audio/universite-recall.mp4"], c = await caches.open("ecoute-audio-1964c6f14e");
   let done = 0; const missing = [];
   for (const f of files) (await c.match(new URL(f, location.href).href)) ? done++ : missing.push(f);

@@ -1,5 +1,5 @@
 // Écoute offline service worker. Page + fonts cached by version; audio lives in its own cache so updates don't re-download it.
-const SHELL = "ecoute-shell-11b2699e9b", AUDIO = "ecoute-audio-1964c6f14e", FONTS = "ecoute-fonts";
+const SHELL = "ecoute-shell-eae8860585", AUDIO = "ecoute-audio-1964c6f14e", FONTS = "ecoute-fonts";
 const SHELL_FILES = ["./", "index.html", "manifest.json", "icon-180.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
