@@ -460,7 +460,7 @@ $("cur").textContent = L().sentences[cues()[cueAt(saved.pos || 0)][1]].fr;
   // Save the web fonts too (the first visit loads them before the service worker is in control).
   (async () => { try {
     if (!navigator.serviceWorker.controller) await new Promise(r => { navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }); setTimeout(r, 3000); });
-    for (const l of document.querySelectorAll('link[href*="fonts.googleapis.com"]')) {
+    for (const l of document.querySelectorAll('link[rel=stylesheet][href*="fonts.googleapis.com"]')) {
       const css = await (await fetch(l.href)).text();
       await Promise.all([...css.matchAll(/url\((https:[^)]+)\)/g)].map(m => fetch(m[1]).catch(() => {})));
     } } catch {} })();
